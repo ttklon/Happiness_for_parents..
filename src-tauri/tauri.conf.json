@@ -1,0 +1,63 @@
+{
+  "$schema": "https://api.tauri.app/schema/v2",
+  "productName": "Happiness Scanner",
+  "version": "0.1.0",
+  "identifier": "com.happiness.scanner",
+  "build": {
+    "frontendDist": "../frontend/dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "cd ../frontend && npm run dev",
+    "beforeBuildCommand": "cd ../frontend && npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Happiness Scanner",
+        "url": "/",
+        "width": 1100,
+        "height": 760,
+        "resizable": true,
+        "fullscreen": false,
+        "minimizable": true,
+        "maximizable": true,
+        "closable": true,
+        "center": true,
+        "visible": true,
+        "transparent": false,
+        "decorations": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: ws: http: https:"
+    }
+  },
+  "plugins": {
+    "log": {
+      "level": "debug",
+      "max_size": 1048576,
+      "max_files": 5
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "msi",
+    "icon": [
+      "icons/icon.png"
+    ],
+    "resources": [],
+    "external-bin": [],
+    "copyright": "Copyright © Happiness for parents",
+    "category": "Utility",
+    "shortDescription": "Background BTC wallet scanner with beautiful settings.",
+    "longDescription": "Rust + Tauri application that endlessly searches for Bitcoin wallets with balance in the background on Windows 11, with configurable load level, tray operation, Telegram notifications and beautiful settings.",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": null,
+      "wix": {
+        "language": "en-US"
+      }
+    }
+  }
+}

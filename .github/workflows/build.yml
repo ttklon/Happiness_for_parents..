@@ -1,0 +1,48 @@
+name: Build Happiness Scanner (Windows)
+
+on:
+  push:
+    branches: [ arena/a5a5f752-happiness-for-parents ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+        shell: pwsh
+
+      - name: Build frontend (Tailwind + Vite)
+        run: |
+          cd frontend
+          npm run build
+        shell: pwsh
+
+      - name: Build Tauri application (MSI)
+        run: |
+          cd src-tauri
+          cargo tauri build
+        shell: pwsh
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: happiness-scanner-windows
+          path: src-tauri/target/release/bundle/
+          retention-days: 7
