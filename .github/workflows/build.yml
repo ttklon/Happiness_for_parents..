@@ -32,22 +32,12 @@ jobs:
           npm install
         shell: pwsh
 
-      - name: Debug frontend environment
+      - name: Build frontend
         run: |
           cd frontend
-          echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
-          echo "Tailwind path: $(Get-Command tailwindcss -ErrorAction SilentlyContinue)"
-          echo "npx tailwindcss version:"
-          npx tailwindcss --version
-        shell: pwsh
-
-      - name: Build frontend (Tailwind + Vite)
-        run: |
-          cd frontend
-          npm run css
+          npx tailwindcss -i src/input.css -o src/output.css -c tailwind.config.cjs --content "src/**/*.{html,js,ts,jsx,tsx}" --minify
           npx tsc
-          npm run vite-build
+          npx vite build
         shell: pwsh
 
       - name: Build Tauri application (MSI)
