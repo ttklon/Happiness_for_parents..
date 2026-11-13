@@ -15,6 +15,10 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+        shell: pwsh
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
