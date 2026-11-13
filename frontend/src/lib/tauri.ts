@@ -10,10 +10,13 @@ export interface AppConfig {
   telegram_chat_id: string;
   network: string;
   address_type: string;
+<<<<<<< HEAD
   scan_mode: string;
   extra_wordlist: string;
   auto_start: boolean;
   start_minimized: boolean;
+=======
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
@@ -26,16 +29,22 @@ export const DEFAULT_CONFIG: AppConfig = {
   telegram_chat_id: '',
   network: 'mainnet',
   address_type: 'legacy',
+<<<<<<< HEAD
   scan_mode: 'random',
   extra_wordlist: '',
   auto_start: true,
   start_minimized: true,
+=======
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
 };
 
 export interface ScanStats {
   running: boolean;
   workers: number;
+<<<<<<< HEAD
   mode: string;
+=======
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
   total_checked: number;
   hits: number;
   empty: number;
@@ -43,7 +52,11 @@ export interface ScanStats {
   checks_per_hour: number;
   uptime_seconds: number;
   last_address: string;
+<<<<<<< HEAD
   last_input: string;
+=======
+  last_mnemonic: string;
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
   last_balance: number;
 }
 
@@ -62,6 +75,7 @@ export interface BalanceProbe {
   message: string;
 }
 
+<<<<<<< HEAD
 export interface AddressBalance {
   address: string;
   final_balance: number;
@@ -69,6 +83,8 @@ export interface AddressBalance {
   n_tx?: number;
 }
 
+=======
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
 export async function loadConfig(): Promise<AppConfig> {
   return invoke<AppConfig>('load_config');
 }
@@ -105,6 +121,7 @@ export async function testApi(config: AppConfig): Promise<BalanceProbe> {
   return invoke<BalanceProbe>('test_api', { config });
 }
 
+<<<<<<< HEAD
 export async function enableAutoStart(): Promise<string> {
   return invoke<string>('enable_auto_start_cmd');
 }
@@ -117,6 +134,8 @@ export async function isAutoStartEnabled(): Promise<boolean> {
   return invoke<boolean>('is_auto_start_enabled_cmd');
 }
 
+=======
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
 export function formatBalance(satoshis: number): string {
   return (satoshis / 1e8).toFixed(8);
 }

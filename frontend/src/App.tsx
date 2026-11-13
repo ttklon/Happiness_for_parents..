@@ -7,9 +7,12 @@ import {
   loadConfig,
   toggleWindow,
   testApi,
+<<<<<<< HEAD
   enableAutoStart,
   disableAutoStart,
   isAutoStartEnabled,
+=======
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
   type AppConfig,
   type ScanStats,
   DEFAULT_CONFIG,
@@ -32,11 +35,17 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [pollTimer, setPollTimer] = useState<ReturnType<typeof setInterval> | null>(null);
+<<<<<<< HEAD
   const [autoStartEnabled, setAutoStartEnabled] = useState(false);
 
   useEffect(() => {
     loadConfig().then(setConfig).catch(() => {});
     isAutoStartEnabled().then(setAutoStartEnabled).catch(() => {});
+=======
+
+  useEffect(() => {
+    loadConfig().then(setConfig).catch(() => {});
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
   }, []);
 
   const pollStats = useCallback(async () => {
@@ -108,6 +117,7 @@ export default function App() {
     }
   };
 
+<<<<<<< HEAD
   const handleEnableAutoStart = async () => {
     setLoading(true);
     try {
@@ -134,6 +144,8 @@ export default function App() {
     }
   };
 
+=======
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
   const running = stats?.running ?? false;
 
   return (
@@ -167,7 +179,11 @@ export default function App() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+<<<<<<< HEAD
           {page === 'dashboard' && <Dashboard config={config} stats={stats} running={running} onStart={handleStart} onStop={handleStop} onTestApi={handleTestApi} loading={loading} autoStartEnabled={autoStartEnabled} onEnableAutoStart={handleEnableAutoStart} onDisableAutoStart={handleDisableAutoStart} />}
+=======
+          {page === 'dashboard' && <Dashboard config={config} stats={stats} running={running} onStart={handleStart} onStop={handleStop} onTestApi={handleTestApi} loading={loading} />}
+>>>>>>> origin/arena/a5a5f752-happiness-for-parents
           {page === 'settings' && <SettingsPage config={config} setConfig={setConfig} onSave={handleSave} onTestApi={handleTestApi} loading={loading} />}
           {page === 'hits' && <HitsPage />}
         </main>
