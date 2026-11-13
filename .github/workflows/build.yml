@@ -35,9 +35,7 @@ jobs:
       - name: Build frontend
         run: |
           cd frontend
-          npx tailwindcss -i src/input.css -o src/output.css -c tailwind.config.cjs --content "src/**/*.{html,js,ts,jsx,tsx}" --minify
-          npx tsc
-          npx vite build
+          npm run build
         shell: pwsh
 
       - name: Build Tauri application (MSI)
