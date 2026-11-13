@@ -1,0 +1,18 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/package-lock.json
+frontend/npm-debug.log*
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+src-tauri/target/
+*.rs.bak
+
+# OS
+.DS_Store
+Thumbs.db
+.env
+*.log
