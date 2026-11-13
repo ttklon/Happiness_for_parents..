@@ -32,10 +32,16 @@ jobs:
           npm install
         shell: pwsh
 
-      - name: Build frontend (Vite only)
+      - name: Debug: list node_modules/.bin
         run: |
           cd frontend
-          npx vite build
+          ls node_modules/.bin/ | head -30
+        shell: pwsh
+
+      - name: Build frontend (Vite via local binary)
+        run: |
+          cd frontend
+          ./node_modules/.bin/vite build
         shell: pwsh
 
       - name: Build Tauri application (MSI)
