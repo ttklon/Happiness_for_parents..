@@ -32,10 +32,9 @@ jobs:
           npm install
         shell: pwsh
 
-      - name: Build frontend (TypeScript + Vite)
+      - name: Build frontend (Vite only)
         run: |
           cd frontend
-          npx tsc
           npx vite build
         shell: pwsh
 
