@@ -32,10 +32,11 @@ jobs:
           npm install
         shell: pwsh
 
-      - name: Build frontend
+      - name: Build frontend (TypeScript + Vite)
         run: |
           cd frontend
-          npm run build
+          npx tsc
+          npx vite build
         shell: pwsh
 
       - name: Build Tauri application (MSI)
